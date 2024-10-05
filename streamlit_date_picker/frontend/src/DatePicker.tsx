@@ -8,7 +8,7 @@ import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 
-import 'dayjs/locale/zh-cn';
+import 'dayjs/locale/pt-br'; // Importa o idioma português brasileiro
 import 'dayjs/plugin/utc';
 import 'dayjs/plugin/timezone';
 import 'dayjs/plugin/localeData';
@@ -17,8 +17,9 @@ import {FormatString, getFormatString, getPickerType, PickerType} from "./utils"
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-dayjs.tz.setDefault('Asia/Shanghai');
-
+// Define a localidade como português brasileiro e ajusta o fuso horário
+dayjs.locale('pt-br');
+dayjs.tz.setDefault('America/Sao_Paulo');  // Ajusta o fuso para São Paulo
 
 interface State {
     picker_type: PickerType,
@@ -27,7 +28,6 @@ interface State {
 }
 export class DatePicker extends StreamlitComponentBase<State> {
 
-
     constructor(props: ComponentProps<any>) {
         super(props);
         this.state = {
@@ -35,11 +35,11 @@ export class DatePicker extends StreamlitComponentBase<State> {
             format_string: getFormatString(this.props.args["picker_type"]) || FormatString.date,
             value: dayjs(this.props.args["value"] * 1000),
         }
-        this.setComponentValue()
+        this.setComponentValue();
     }
 
     private setComponentValue = () => {
-        Streamlit.setComponentValue(this.state.value.format(this.state.format_string))
+        Streamlit.setComponentValue(this.state.value.format(this.state.format_string));
     }
 
     public render = (): ReactNode => {
@@ -64,14 +64,14 @@ export class DatePicker extends StreamlitComponentBase<State> {
                            value={this.state.value}
               />}
             </div>
-        )
+        );
     }
 
     private _onChange = (date: any, dateString: any) => {
         this.setState({
             value: date
         });
-        Streamlit.setComponentValue(dateString)
+        Streamlit.setComponentValue(dateString);
     }
 
     private _onOpenChange: DatePickerProps['onOpenChange'] = (isOpen) => {
