@@ -13,7 +13,7 @@ st.title('Streamlit Date Picker')
 st.subheader('Date Picker')
 st.markdown("#### 1.Time Picker")
 default_value = datetime.now()
-select_date = date_picker(picker_type=PickerType.time, value=default_value, key='time_date_picker')
+select_date = date_picker(picker_type=PickerType.time, value=default_value, key='time_date_picker', label='Test')
 if select_date:
     st.write(f"Date Picker: {select_date}")
 

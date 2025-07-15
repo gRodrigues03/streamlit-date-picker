@@ -1,93 +1,127 @@
 import {
   Streamlit,
-  StreamlitComponentBase,
 } from "streamlit-component-lib"
-import React, {ComponentProps, ReactNode} from "react"
-import { DatePicker as DATE_PICKER, DatePickerProps } from 'antd';
+import React, {ComponentProps, useMemo, useState, useCallback } from "react"
+import { DatePicker as DATE_PICKER, ConfigProvider } from 'antd';
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 
-import 'dayjs/locale/zh-cn';
+
 import 'dayjs/plugin/utc';
 import 'dayjs/plugin/timezone';
 import 'dayjs/plugin/localeData';
 import {FormatString, getFormatString, getPickerType, PickerType} from "./utils";
 
+
+import locale from 'antd/locale/pt_BR';
+import 'dayjs/locale/pt-br';
+
+dayjs.locale('pt-br');
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-dayjs.tz.setDefault('Asia/Shanghai');
+dayjs.tz.setDefault('America/Sao_Paulo');
 
-
-interface State {
-    picker_type: PickerType,
-    format_string: FormatString
-    value: dayjs.Dayjs,
-    availableDates: dayjs.Dayjs[],
+function useCssVar(varName: string) {
+    return getComputedStyle(document.documentElement).getPropertyValue(varName)?.trim();
 }
-export class DatePicker extends StreamlitComponentBase<State> {
+
+function DatePicker(props: ComponentProps<any>) {
+    const [value, setValue] = useState<dayjs.Dayjs>(dayjs(props.args["value"] * 1000));
+
+    const pickerType = useMemo(() => (
+        getPickerType(props.args["picker_type"]) || PickerType.date
+    ), [props.args["picker_type"]]);
+
+    const formatString = useMemo(() => (
+        getFormatString(props.args["picker_type"]) || FormatString.date
+    ), [props.args["picker_type"]]);
+
+    const availableDates = useMemo(() => (
+        props.args["available_dates"]
+            ? props.args["available_dates"].map((d: number) => dayjs(d * 1000))
+            : []
+    ), [props.args["available_dates"]]);
 
 
-    constructor(props: ComponentProps<any>) {
-        super(props);
-        this.state = {
-            picker_type: getPickerType(this.props.args["picker_type"]) || PickerType.date,
-            format_string: getFormatString(this.props.args["picker_type"]) || FormatString.date,
-            value: dayjs(this.props.args["value"] * 1000),
-            availableDates: this.props.args["available_dates"] ? 
-                this.props.args["available_dates"].map((available_date: number) => dayjs(available_date * 1000)) : []
+    const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const checkOpen = useCallback(() => {
+        if (timeoutRef.current !== null) {
+            clearTimeout(timeoutRef.current);
         }
-        this.setComponentValue()
-    }
 
-    private setComponentValue = () => {
-        Streamlit.setComponentValue(this.state.value.format(this.state.format_string))
-    }
+        timeoutRef.current = setTimeout(() => {
+            const picker = document.querySelector('.ant-picker');
+            const dropdown = document.querySelector('.ant-picker-dropdown');
 
-    public render = (): ReactNode => {
-        return (
-            <div style={{ height: '50px' }}>
-                {this.state.picker_type === "time" &&
-                    <DATE_PICKER showTime
-                           format={this.state.format_string}
-                           onChange={this._onChange}
-                           placement={"bottomLeft"}
-                           onOpenChange={this._onOpenChange}
-                           value={this.state.value}
-                           disabledDate={this.disabledDate}
-                    />
-                }
-                {this.state.picker_type !== "time" &&
-                    <DATE_PICKER
-                           picker={this.state.picker_type}
-                           format={this.state.format_string}
-                           onChange={this._onChange}
-                           placement={"bottomLeft"}
-                           onOpenChange={this._onOpenChange}
-                           value={this.state.value}
-                           disabledDate={this.disabledDate}
-              />}
-            </div>
-        )
-    }
+            if (
+                !picker?.classList.contains('ant-picker-focused') ||
+                dropdown?.classList.contains('ant-slide-up-leave')
+            ) {
+                Streamlit.setFrameHeight();
+                console.log('nada');
+            } else {
+                Streamlit.setFrameHeight(420);
+                console.log(420);
+            }
+        }, 20);
+    }, []);
 
-    private _onChange = (date: any, dateString: any) => {
-        this.setState({
-            value: date
-        });
-        Streamlit.setComponentValue(dateString)
-    }
+    const onChange = useCallback((date: any, dateString: any) => {
+        setValue(date);
+        Streamlit.setComponentValue(dateString);
+        checkOpen();
+    }, [checkOpen]);
 
-    private _onOpenChange: DatePickerProps['onOpenChange'] = (isOpen) => {
-        Streamlit.setFrameHeight(450);
-        super.componentDidUpdate();
-    }
+    const onOpenChange = useCallback(() => {
+        checkOpen();
+    }, [checkOpen]);
 
-    private disabledDate = (current: dayjs.Dayjs) => {
-        if (this.state.availableDates.length === 0) {
+    const disabledDate = useCallback((current: dayjs.Dayjs) => {
+        if (availableDates.length === 0) {
             return false;
         }
-        return !this.state.availableDates.some(availableDate => availableDate.isSame(current, 'day'));
-    }
+        return !availableDates.some((date: dayjs.Dayjs) => date.isSame(current, 'day'))
+    }, [availableDates]);
+
+    return (
+        <div>
+            <ConfigProvider locale={locale}
+            theme={{
+            token: {
+                colorPrimary: useCssVar('--primary-color'),
+                colorTextBase: useCssVar('--text-color'),
+                borderRadius: 8,
+
+                colorBgBase: useCssVar('--secondary-background-color'),
+            },
+        }}>
+            {pickerType === "time" ? (
+                <DATE_PICKER
+                    showTime
+                    format={formatString}
+                    onChange={onChange}
+                    placement="bottomLeft"
+                    onOpenChange={onOpenChange}
+                    value={value}
+                    disabledDate={disabledDate}
+                />
+            ) : (
+                <DATE_PICKER
+                    picker={pickerType}
+                    format={formatString}
+                    onChange={onChange}
+                    placement="bottomLeft"
+                    onOpenChange={onOpenChange}
+                    value={value}
+                    disabledDate={disabledDate}
+                />
+            )}
+            </ConfigProvider>
+        </div>
+    );
 }
+
+export default DatePicker;

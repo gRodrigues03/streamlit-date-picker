@@ -1,19 +1,27 @@
-import React from "react"
+import React, {useEffect} from "react"
 import { createRoot } from 'react-dom/client';
-import {ComponentProps, withStreamlitConnection} from "streamlit-component-lib";
+import {Streamlit, ComponentProps, withStreamlitConnection} from "streamlit-component-lib";
 import {DateRangePicker} from "./RangePicker";
-import {DatePicker} from "./DatePicker";
+import DatePicker from "./DatePicker";
 
 const DatePickerComponent = (props: ComponentProps) => {
-    const id = props.args['id']
+    const id = props.args['id'];
+    const label = props.args['label'];
+    useEffect(() => {
+        Streamlit.setFrameHeight();
+    }, []);
     switch (id) {
         case 'date_range_picker':
-            return (
+            return (<>
+                {label && <p className={'label'}>{label}</p>}
                 <DateRangePicker {...props}/>
+                </>
             );
         case 'date_picker':
-            return (
+            return (<>
+                {label && <p className={'label'}>{label}</p>}
                 <DatePicker {...props}/>
+                </>
             );
     }
 };

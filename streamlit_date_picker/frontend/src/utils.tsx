@@ -27,11 +27,11 @@ export const getPickerType = (value: string): PickerType | undefined => {
 }
 
 export enum FormatString {
-    time = 'YYYY-MM-DD HH:mm:ss',
-    date = 'YYYY-MM-DD',
-    week = 'YYYY-wo',
-    month = 'YYYY-MM',
-    quarter = 'YYYY-Q',
+    time = 'DD/MM/YYYY HH:mm:ss',
+    date = 'DD/MM/YYYY',
+    week = 'wo/YYYY',
+    month = 'MM/YYYY',
+    quarter = 'Q/YYYY',
     year = 'YYYY'
 }
 export const getFormatString = (value: string): FormatString | undefined => {

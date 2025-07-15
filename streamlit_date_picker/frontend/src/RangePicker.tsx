@@ -105,7 +105,7 @@ export class DateRangePicker extends StreamlitComponentBase<State> {
     }
 
     private _onOpenChange: DatePickerProps['onOpenChange'] = (isOpen) => {
-        Streamlit.setFrameHeight(450);
+        Streamlit.setFrameHeight();
         super.componentDidUpdate();
     }
 
