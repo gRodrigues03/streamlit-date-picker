@@ -1,9 +1,15 @@
 # Streamlit DatePicker
 
-[![PyPI](https://img.shields.io/pypi/v/streamlit-datetime-range-picker.svg)](https://pypi.org/project/streamlit-datetime-range-picker/)
-[![GitHub](https://img.shields.io/github/license/imdreamer2018/streamlit-datetime-range-picker)](https://github.com/imdreamer2018/streamlit-datetime-range-picker/blob/main/LICENSE)
-[![GitHub issues](https://img.shields.io/github/issues/imdreamer2018/streamlit-datetime-range-picker)](https://github.com/imdreamer2018/streamlit-datetime-range-picker/issues)
-[![GitHub pull requests](https://img.shields.io/github/issues-pr/imdreamer2018/streamlit-datetime-range-picker)](https://github.com/imdreamer2018/streamlit-datetime-range-picker/pulls)
+This is a fork of Streamlit Date Picker by [Imdreamer](https://github.com/imdreamer2018). The original repo can be found [here](https://github.com/imdreamer2018/streamlit-date-picker)
+
+## Modifications included in this fork (WIP)
+
+ - Streamlit colors support (native accent and background colors)
+ - Better handling of module height changes
+ - Different timezones, date formats and languages
+
+
+# Original readme:
 
 ## Project Introduction
 
