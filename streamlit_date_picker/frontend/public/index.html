@@ -8,8 +8,9 @@
     <meta name="description" content="Streamlit Component" />
   <style>
     body {
-      padding: 0;
-      margin: 1px
+      height: 0 !important;
+      overflow: visible;
+      margin: 0;
     }
     p.label {
       font-size: 0.875rem;
@@ -18,6 +19,9 @@
     }
     .ant-picker {
       padding: 7.5px 11.25px
+    }
+    .ant-picker-outlined:focus-within{
+      box-shadow: none !important;
     }
   </style>
   </head>

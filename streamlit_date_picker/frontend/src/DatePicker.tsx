@@ -1,18 +1,15 @@
-import {
-  Streamlit,
-} from "streamlit-component-lib"
-import React, {ComponentProps, useMemo, useState, useCallback } from "react"
+import { Streamlit } from "streamlit-component-lib"
+import React, { ComponentProps, useMemo, useState, useCallback, useRef } from "react"
 import { DatePicker as DATE_PICKER, ConfigProvider } from 'antd';
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
-
+import MaskedInput from "react-text-mask";
 
 import 'dayjs/plugin/utc';
 import 'dayjs/plugin/timezone';
 import 'dayjs/plugin/localeData';
-import {FormatString, getFormatString, getPickerType, PickerType} from "./utils";
-
+import { FormatString, getFormatString, getPickerType, PickerType, getMaskByFormat, useCssVar } from "./utils";
 
 import locale from 'antd/locale/pt_BR';
 import 'dayjs/locale/pt-br';
@@ -23,12 +20,9 @@ dayjs.extend(timezone);
 
 dayjs.tz.setDefault('America/Sao_Paulo');
 
-function useCssVar(varName: string) {
-    return getComputedStyle(document.documentElement).getPropertyValue(varName)?.trim();
-}
-
 function DatePicker(props: ComponentProps<any>) {
     const [value, setValue] = useState<dayjs.Dayjs>(dayjs(props.args["value"] * 1000));
+    const inputRef = useRef<any>(null);
 
     const pickerType = useMemo(() => (
         getPickerType(props.args["picker_type"]) || PickerType.date
@@ -52,6 +46,8 @@ function DatePicker(props: ComponentProps<any>) {
             clearTimeout(timeoutRef.current);
         }
 
+        const wasFocused = document.activeElement === inputRef.current;
+
         timeoutRef.current = setTimeout(() => {
             const picker = document.querySelector('.ant-picker');
             const dropdown = document.querySelector('.ant-picker-dropdown');
@@ -60,11 +56,20 @@ function DatePicker(props: ComponentProps<any>) {
                 !picker?.classList.contains('ant-picker-focused') ||
                 dropdown?.classList.contains('ant-slide-up-leave')
             ) {
-                Streamlit.setFrameHeight();
-                console.log('nada');
+                Streamlit.setFrameHeight(39);
+                if (inputRef.current) {
+                    inputRef.current.blur();
+                }
             } else {
                 Streamlit.setFrameHeight(420);
-                console.log(420);
+            }
+
+            // Re-focus input if it had focus before resizing
+            if (wasFocused && inputRef.current) {
+                setTimeout(() => {
+                    inputRef.current?.focus();
+                    inputRef.current?.select(); // optional
+                }, 50); // Small delay to let frame resize settle
             }
         }, 20);
     }, []);
@@ -72,6 +77,7 @@ function DatePicker(props: ComponentProps<any>) {
     const onChange = useCallback((date: any, dateString: any) => {
         setValue(date);
         Streamlit.setComponentValue(dateString);
+
         checkOpen();
     }, [checkOpen]);
 
@@ -85,7 +91,35 @@ function DatePicker(props: ComponentProps<any>) {
         }
         return !availableDates.some((date: dayjs.Dayjs) => date.isSame(current, 'day'))
     }, [availableDates]);
+    const InputComponent = React.forwardRef((propsInput, ref) => {
+        return (
+            <MaskedInput
+                {...propsInput}
+                mask={getMaskByFormat(formatString)}
+                placeholder={formatString}
+                render={(textMaskRef, props) => (
+                    <input
+                        {...props}
+                        ref={(node) => {
+                            if (node) {
+                                textMaskRef(node);
 
+                                // Save actual input to external ref
+                                inputRef.current = node;
+
+                                // Forward ref
+                                if (typeof ref === 'function') {
+                                    ref(node);
+                                } else if (ref && 'current' in ref) {
+                                    ref.current = node;
+                                }
+                            }
+                        }}
+                    />
+                )}
+            />
+        );
+    });
     return (
         <div>
             <ConfigProvider locale={locale}
@@ -96,10 +130,12 @@ function DatePicker(props: ComponentProps<any>) {
                 borderRadius: 8,
 
                 colorBgBase: useCssVar('--secondary-background-color'),
+                colorErrorBg: useCssVar('--background-color'),
             },
         }}>
             {pickerType === "time" ? (
                 <DATE_PICKER
+                    allowClear={false}
                     showTime
                     format={formatString}
                     onChange={onChange}
@@ -107,16 +143,22 @@ function DatePicker(props: ComponentProps<any>) {
                     onOpenChange={onOpenChange}
                     value={value}
                     disabledDate={disabledDate}
+                    components={{
+                        input: InputComponent,
+                    }}
                 />
             ) : (
                 <DATE_PICKER
-                    picker={pickerType}
+                    allowClear={false}
                     format={formatString}
                     onChange={onChange}
                     placement="bottomLeft"
                     onOpenChange={onOpenChange}
                     value={value}
                     disabledDate={disabledDate}
+                    components={{
+                        input: InputComponent,
+                    }}
                 />
             )}
             </ConfigProvider>

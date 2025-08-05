@@ -52,3 +52,34 @@ export const getFormatString = (value: string): FormatString | undefined => {
       return FormatString.date;
   }
 }
+
+export function getMaskByFormat(format: string): Array<string | RegExp> {
+  if (format === 'DD/MM/YYYY') {
+    return [
+      /[0-3]/, /[0-9]/, "/",
+      /[0-1]/, /[0-9]/, "/",
+      /[1-2]/, /\d/, /\d/, /\d/
+    ];
+  } else if (format === 'MM/YYYY') {
+    return [
+      /[0-1]/, /[0-9]/, "/",
+      /[1-2]/, /\d/, /\d/, /\d/
+    ];
+  } else if (format === 'DD/MM/YYYY HH:mm:ss') {
+    return [
+      /[0-3]/, /[0-9]/, "/",
+      /[0-1]/, /[0-9]/, "/",
+      /[1-2]/, /\d/, /\d/, /\d/,
+      " ",
+      /[0-2]/, /[0-9]/, ":",
+      /[0-5]/, /[0-9]/, ":",
+      /[0-5]/, /[0-9]/
+    ];
+  }
+
+  return []; // fallback
+}
+
+export function useCssVar(varName: string) {
+  return getComputedStyle(document.documentElement).getPropertyValue(varName)?.trim();
+}

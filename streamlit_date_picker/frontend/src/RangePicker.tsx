@@ -1,118 +1,122 @@
-import {
-  Streamlit,
-  StreamlitComponentBase,
-} from "streamlit-component-lib"
-import React, {ComponentProps, ReactNode} from "react"
-import { DatePicker, DatePickerProps, Button } from 'antd';
+import { Streamlit } from "streamlit-component-lib"
+import React, { ComponentProps, useMemo, useState, useCallback } from "react"
+import { DatePicker, ConfigProvider } from 'antd';
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 
-import 'dayjs/locale/zh-cn';
 import 'dayjs/plugin/utc';
 import 'dayjs/plugin/timezone';
 import 'dayjs/plugin/localeData';
-import {FormatString, getFormatString, getPickerType, PickerType} from "./utils";
+import { FormatString, getFormatString, getPickerType, PickerType, useCssVar } from "./utils";
 
+import locale from 'antd/locale/pt_BR';
+import 'dayjs/locale/pt-br';
+
+dayjs.locale('pt-br');
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-dayjs.tz.setDefault('Asia/Shanghai');
+dayjs.tz.setDefault('America/Sao_Paulo');
 
 const { RangePicker } = DatePicker;
 
-interface State {
-    picker_type: PickerType,
-    format_string: FormatString,
-    start: dayjs.Dayjs,
-    end: dayjs.Dayjs,
-    refresh_buttons: { button_name: string, refresh_value: number }[],
-    availableDates: dayjs.Dayjs[]
-}
-export class DateRangePicker extends StreamlitComponentBase<State> {
+function DateRangePicker(props: ComponentProps<any>) {
+    const [start, setStart] = useState<dayjs.Dayjs>(dayjs(props.args["start"] * 1000));
+    const [end, setEnd] = useState<dayjs.Dayjs>(dayjs(props.args["end"] * 1000));
 
-    constructor(props: ComponentProps<any>) {
-        super(props);
-        const refreshButtons = this.props.args["refresh_buttons"] || [];
-        this.state = {
-            picker_type: getPickerType(this.props.args["picker_type"]) || PickerType.date,
-            format_string: getFormatString(this.props.args["picker_type"]) || FormatString.date,
-            start: dayjs(this.props.args["start"] * 1000),
-            end: dayjs(this.props.args["end"] * 1000),
-            refresh_buttons: refreshButtons,
-            availableDates: this.props.args["available_dates"] ? 
-                this.props.args["available_dates"].map((available_date: number) => dayjs(available_date * 1000)) : []
+    const pickerType = useMemo(() => (
+        getPickerType(props.args["picker_type"]) || PickerType.date
+    ), [props.args["picker_type"]]);
+
+    const formatString = useMemo(() => (
+        getFormatString(props.args["picker_type"]) || FormatString.date
+    ), [props.args["picker_type"]]);
+
+    const availableDates = useMemo(() => (
+        props.args["available_dates"]
+            ? props.args["available_dates"].map((d: number) => dayjs(d * 1000))
+            : []
+    ), [props.args["available_dates"]]);
+
+    const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const checkOpen = useCallback(() => {
+        if (timeoutRef.current !== null) {
+            clearTimeout(timeoutRef.current);
         }
-        this.setComponentValue();
-    }
 
-    private setComponentValue = () => {
-        Streamlit.setComponentValue([
-            this.state.start.format(this.state.format_string),
-            this.state.end.format(this.state.format_string)])
-    }
+        timeoutRef.current = setTimeout(() => {
+            const picker = document.querySelector('.ant-picker');
+            const dropdown = document.querySelector('.ant-picker-dropdown');
 
-    public render = (): ReactNode => {
-        return (
-            <div style={{ height: '60px', display: 'flex', alignItems: 'center' }}>
-                {this.state.picker_type === "time" &&
-                    <RangePicker showTime
-                           format={this.state.format_string}
-                           onChange={this._onChange}
-                           placement={"bottomLeft"}
-                           onOpenChange={this._onOpenChange}
-                           value={[this.state.start, this.state.end]}
-                           disabledDate={this.disabledDate}
-                    />
-                }
-                {this.state.picker_type !== "time" &&
-                    <RangePicker
-                           picker={this.state.picker_type}
-                           format={this.state.format_string}
-                           onChange={this._onChange}
-                           placement={"bottomLeft"}
-                           onOpenChange={this._onOpenChange}
-                           value={[this.state.start, this.state.end]}
-                           disabledDate={this.disabledDate}
-                    />}
-                <div style={{ display: 'flex', flexWrap: 'wrap', marginLeft: '20px' }}>
-                    {this.state.refresh_buttons.length > 0 &&
-                        this.state.refresh_buttons.map((button, index) => (
-                            <Button key={'fresh_button_'+index} onClick={() => this._button_on_click(button.refresh_value)}
-                                    style={{ marginLeft: '10px' }}>{button.button_name}
-                            </Button>
-                        ))
-                    }
-                </div>
-            </div>
-        )
-    }
+            if (
+                !picker?.classList.contains('ant-picker-focused') ||
+                dropdown?.classList.contains('ant-slide-up-leave')
+            ) {
+                Streamlit.setFrameHeight(39);
+            } else {
+                Streamlit.setFrameHeight(420);
+            }
+        }, 20);
+    }, []);
 
-    private _button_on_click = (refreshValue: number) => {
-        this.setState({
-            start: dayjs().subtract(refreshValue, 'seconds'),
-            end: dayjs()
-        });
-        this.setComponentValue();
-    }
+    const onChange = useCallback((date: any, dateString: any) => {
+        setStart(date[0]);
+        setEnd(date[1]);
+        Streamlit.setComponentValue(dateString);
+        checkOpen();
+    }, [checkOpen]);
 
-    private _onChange = (date: any, dateString: any) => {
-        this.setState({
-            start: date[0],
-            end: date[1]
-        });
-        Streamlit.setComponentValue(dateString)
-    }
+    const onOpenChange = useCallback(() => {
+        checkOpen();
+    }, [checkOpen]);
 
-    private _onOpenChange: DatePickerProps['onOpenChange'] = (isOpen) => {
-        Streamlit.setFrameHeight();
-        super.componentDidUpdate();
-    }
-
-    private disabledDate = (current: dayjs.Dayjs) => {
-        if (this.state.availableDates.length === 0) {
+    const disabledDate = useCallback((current: dayjs.Dayjs) => {
+        if (availableDates.length === 0) {
             return false;
         }
-        return !this.state.availableDates.some(availableDate => availableDate.isSame(current, 'day'));
-    }
+        return !availableDates.some((date: dayjs.Dayjs) => date.isSame(current, 'day'))
+    }, [availableDates]);
+
+    return (
+        <div>
+            <ConfigProvider locale={locale}
+                            theme={{
+                                token: {
+                                    colorPrimary: useCssVar('--primary-color'),
+                                    colorTextBase: useCssVar('--text-color'),
+                                    borderRadius: 8,
+
+                                    colorBgBase: useCssVar('--secondary-background-color'),
+                                },
+                            }}>
+                {pickerType === "time" ? (
+                    <RangePicker
+                        allowClear={false}
+                        showTime
+                        format={formatString}
+                        onChange={onChange}
+                        placement="bottomLeft"
+                        onOpenChange={onOpenChange}
+                        value={[start, end]}
+                        disabledDate={disabledDate}
+                    />
+                ) : (
+                    <RangePicker
+                        allowClear={false}
+                        picker={pickerType}
+                        format={formatString}
+                        onChange={onChange}
+                        placement="bottomLeft"
+                        onOpenChange={onOpenChange}
+                        value={[start, end]}
+                        disabledDate={disabledDate}
+                    />
+                )}
+            </ConfigProvider>
+        </div>
+    );
 }
+
+export default DateRangePicker;
