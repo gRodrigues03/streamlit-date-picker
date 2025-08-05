@@ -7,20 +7,23 @@ import DatePicker from "./DatePicker";
 const DatePickerComponent = (props: ComponentProps) => {
     const id = props.args['id'];
     const label = props.args['label'];
+
     useEffect(() => {
         Streamlit.setFrameHeight();
     }, []);
+    // const color = props.args.theme === 'dark' ? '#242830' : '#F3F4F5'
+    const bgColor = props.args.theme === 'dark' ? '#242830' : '#F3F4F5'
+    const textColor = props.args.theme === 'dark' ? '#FFF' : '#000'
+    const borderColor = props.args.theme === 'dark' ? '#343840' : '#cdcece'
     return (
         <>
-            {label && <p className="label">{label}</p>}
-            {id === 'date_range_picker' && <DateRangePicker {...props} />}
-            {id === 'date_picker' && <DatePicker {...props} />}
+            {label && <p className="label" style={{ color: textColor }}>{label}</p>}
+            {id === 'date_range_picker' && <DateRangePicker {...props} bgColor={bgColor} textColor={textColor} borderColor={borderColor} />}
+            {id === 'date_picker' && <DatePicker {...props} bgColor={bgColor} textColor={textColor} borderColor={borderColor} />}
         </>
     );
 };
 
-//wrap component
-// @ts-ignore
 const StreamlitDatePickerComponent = withStreamlitConnection(DatePickerComponent)
 
 const root = createRoot(document.getElementById("root") as HTMLElement);

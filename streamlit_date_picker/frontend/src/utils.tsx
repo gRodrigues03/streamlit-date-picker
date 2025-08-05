@@ -1,31 +1,3 @@
-export enum PickerType {
-  time = 'time',
-  date = 'date',
-  week = 'week',
-  month = 'month',
-  quarter = 'quarter',
-  year = 'year'
-}
-
-export const getPickerType = (value: string): PickerType | undefined => {
-  switch (value) {
-    case 'time':
-      return PickerType.time
-    case 'date':
-      return PickerType.date
-    case 'week':
-      return PickerType.week
-    case 'month':
-      return PickerType.month
-    case 'quarter':
-      return PickerType.quarter
-    case 'year':
-      return PickerType.year
-    default:
-      return PickerType.date;
-  }
-}
-
 export enum FormatString {
     time = 'DD/MM/YYYY HH:mm:ss',
     date = 'DD/MM/YYYY',
@@ -80,6 +52,6 @@ export function getMaskByFormat(format: string): Array<string | RegExp> {
   return []; // fallback
 }
 
-export function useCssVar(varName: string) {
-  return getComputedStyle(document.documentElement).getPropertyValue(varName)?.trim();
-}
+// export function useCssVar(varName: string) {
+//   return getComputedStyle(document.documentElement).getPropertyValue(varName)?.trim();
+// }

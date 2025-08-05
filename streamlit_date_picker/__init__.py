@@ -1,18 +1,19 @@
 from datetime import datetime, timedelta
-from enum import Enum
+from typing import Literal
 
 import streamlit.components.v1 as components
+import streamlit as st
 import os
 
-
-class PickerType(Enum):
-    time = 'time',
-    date = 'date',
-    week = 'week',
-    month = 'month',
-    quarter = 'quarter',
-    year = 'year'
-
+_picker_type = Literal['time', 'date', 'week', 'month', 'quarter', 'year']
+_picker_strftime = {
+    'time': '%H:%M',
+    'date': '%d/%m/%Y',
+    'week': None,
+    'month': '%m/%Y',
+    'quarter': None,
+    'year': '%Y'
+}
 
 _RELEASE = False
 
@@ -31,19 +32,23 @@ def convert_timedelta_to_total_seconds(delta: timedelta):
     return delta.total_seconds()
 
 
-def date_range_picker(picker_type=PickerType.time, start: datetime = datetime.now(), end: datetime = datetime.now(),
-                      available_dates=None, key=None, label=None):
-
+def date_range_picker(picker_type='time', start: datetime = datetime.now(), end: datetime = datetime.now(),
+                      available_dates=None, key=None, label=None, theme=None):
+    if theme is None:
+        theme = 'dark'
     if available_dates is not None:
         available_dates = [available_date.timestamp() for available_date in available_dates]
-    return component_func(id='date_range_picker', key=key, picker_type=picker_type.name,
+    return component_func(id='date_range_picker', key=key, picker_type=picker_type,
                           start=str(start.timestamp()), end=str(end.timestamp()),
                           available_dates=available_dates,
-                          label=label)
+                          label=label, theme=theme)
 
 
-def date_picker(picker_type=PickerType.date, value: datetime = datetime.now(), available_dates=None, key=None, label=None):
+def date_picker(picker_type: _picker_type = 'date', value: datetime = datetime.now(), available_dates=None, key=None, label=None, theme=None):
+    if theme is None:
+        theme = 'dark'
     if available_dates is not None:
         available_dates = [available_date.timestamp() for available_date in available_dates]
-    return component_func(id='date_picker', key=key, picker_type=picker_type.name, value=str(value.timestamp()), 
-                          available_dates=available_dates, label=label)
+    st.write(picker_type)
+    return component_func(id='date_picker', key=key, picker_type=picker_type, value=str(value.timestamp()),
+                          available_dates=available_dates, label=label, theme=theme, default=value.strftime(_picker_strftime[picker_type]))

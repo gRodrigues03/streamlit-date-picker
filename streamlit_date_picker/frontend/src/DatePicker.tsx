@@ -9,7 +9,7 @@ import MaskedInput from "react-text-mask";
 import 'dayjs/plugin/utc';
 import 'dayjs/plugin/timezone';
 import 'dayjs/plugin/localeData';
-import { FormatString, getFormatString, getPickerType, PickerType, getMaskByFormat, useCssVar } from "./utils";
+import { FormatString, getFormatString, getMaskByFormat } from "./utils";
 
 import locale from 'antd/locale/pt_BR';
 import 'dayjs/locale/pt-br';
@@ -23,9 +23,10 @@ dayjs.tz.setDefault('America/Sao_Paulo');
 function DatePicker(props: ComponentProps<any>) {
     const [value, setValue] = useState<dayjs.Dayjs>(dayjs(props.args["value"] * 1000));
     const inputRef = useRef<any>(null);
+    console.log(props.color)
 
     const pickerType = useMemo(() => (
-        getPickerType(props.args["picker_type"]) || PickerType.date
+        props.args["picker_type"]
     ), [props.args["picker_type"]]);
 
     const formatString = useMemo(() => (
@@ -56,12 +57,12 @@ function DatePicker(props: ComponentProps<any>) {
                 !picker?.classList.contains('ant-picker-focused') ||
                 dropdown?.classList.contains('ant-slide-up-leave')
             ) {
-                Streamlit.setFrameHeight(39);
+                Streamlit.setFrameHeight();
                 if (inputRef.current) {
                     inputRef.current.blur();
                 }
             } else {
-                Streamlit.setFrameHeight(420);
+                Streamlit.setFrameHeight(350);
             }
 
             // Re-focus input if it had focus before resizing
@@ -125,19 +126,18 @@ function DatePicker(props: ComponentProps<any>) {
             <ConfigProvider locale={locale}
             theme={{
             token: {
-                colorPrimary: useCssVar('--primary-color'),
-                colorTextBase: useCssVar('--text-color'),
+                colorTextBase: props.textColor,
                 borderRadius: 8,
-
-                colorBgBase: useCssVar('--secondary-background-color'),
-                colorErrorBg: useCssVar('--background-color'),
-            },
+                colorBgBase: props.bgColor,
+                colorBorder: props.borderColor
+            }
         }}>
             {pickerType === "time" ? (
                 <DATE_PICKER
                     allowClear={false}
                     showTime
                     format={formatString}
+                    picker={pickerType}
                     onChange={onChange}
                     placement="bottomLeft"
                     onOpenChange={onOpenChange}
@@ -151,6 +151,7 @@ function DatePicker(props: ComponentProps<any>) {
                 <DATE_PICKER
                     allowClear={false}
                     format={formatString}
+                    picker={pickerType}
                     onChange={onChange}
                     placement="bottomLeft"
                     onOpenChange={onOpenChange}

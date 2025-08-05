@@ -8,7 +8,7 @@ import timezone from 'dayjs/plugin/timezone';
 import 'dayjs/plugin/utc';
 import 'dayjs/plugin/timezone';
 import 'dayjs/plugin/localeData';
-import { FormatString, getFormatString, getPickerType, PickerType, useCssVar } from "./utils";
+import { FormatString, getFormatString } from "./utils";
 
 import locale from 'antd/locale/pt_BR';
 import 'dayjs/locale/pt-br';
@@ -26,7 +26,7 @@ function DateRangePicker(props: ComponentProps<any>) {
     const [end, setEnd] = useState<dayjs.Dayjs>(dayjs(props.args["end"] * 1000));
 
     const pickerType = useMemo(() => (
-        getPickerType(props.args["picker_type"]) || PickerType.date
+        props.args["picker_type"]
     ), [props.args["picker_type"]]);
 
     const formatString = useMemo(() => (
@@ -54,9 +54,9 @@ function DateRangePicker(props: ComponentProps<any>) {
                 !picker?.classList.contains('ant-picker-focused') ||
                 dropdown?.classList.contains('ant-slide-up-leave')
             ) {
-                Streamlit.setFrameHeight(39);
+                Streamlit.setFrameHeight();
             } else {
-                Streamlit.setFrameHeight(420);
+                Streamlit.setFrameHeight(375);
             }
         }, 20);
     }, []);
@@ -84,12 +84,11 @@ function DateRangePicker(props: ComponentProps<any>) {
             <ConfigProvider locale={locale}
                             theme={{
                                 token: {
-                                    colorPrimary: useCssVar('--primary-color'),
-                                    colorTextBase: useCssVar('--text-color'),
+                                    colorTextBase: props.textColor,
                                     borderRadius: 8,
-
-                                    colorBgBase: useCssVar('--secondary-background-color'),
-                                },
+                                    colorBgBase: props.bgColor,
+                                    colorBorder: props.borderColor
+                                }
                             }}>
                 {pickerType === "time" ? (
                     <RangePicker
