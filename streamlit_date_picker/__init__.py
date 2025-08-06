@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Literal
 
 import streamlit.components.v1 as components
@@ -28,11 +28,7 @@ else:
     component_func = components.declare_component("dater_picker", path=build_dir)
 
 
-def convert_timedelta_to_total_seconds(delta: timedelta):
-    return delta.total_seconds()
-
-
-def date_range_picker(picker_type='time', start: datetime = datetime.now(), end: datetime = datetime.now(),
+def date_range_picker(picker_type='date', start: datetime = datetime.now(), end: datetime = datetime.now(),
                       available_dates=None, key=None, label=None, theme=None):
     if theme is None:
         theme = 'dark'
