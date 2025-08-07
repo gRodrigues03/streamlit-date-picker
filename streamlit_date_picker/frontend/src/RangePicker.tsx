@@ -56,7 +56,7 @@ function DateRangePicker(props: ComponentProps<any>) {
             ) {
                 Streamlit.setFrameHeight();
             } else {
-                Streamlit.setFrameHeight(380);
+                Streamlit.setFrameHeight(415);
             }
         }, 20);
     }, []);

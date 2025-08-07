@@ -62,7 +62,7 @@ function DatePicker(props: ComponentProps<any>) {
                     inputRef.current.blur();
                 }
             } else {
-                Streamlit.setFrameHeight(380);
+                Streamlit.setFrameHeight(415);
             }
 
             // Re-focus input if it had focus before resizing
