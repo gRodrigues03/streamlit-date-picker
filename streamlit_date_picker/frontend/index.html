@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <title>Streamlit Component</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="Streamlit Component" />
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+    <style>
+      html, body {
+        font-size: 15px;
+        background: transparent !important
+      }
+      div, button, html, body {font-family: "Plus Jakarta Sans" !important}
+      body {
+        height: 0px !important;
+        overflow: visible;
+        margin: 0;
+      }
+      p.label {
+        font-size: 0.875rem;
+        padding: 0;
+        margin: 0 0 .25rem 0
+      }
+      .ant-picker {
+        padding: 7.5px 11.25px;
+        min-height: 37.5px !important;
+        width: -webkit-fill-available; width: -moz-available;
+      }
+      .ant-picker-outlined:focus-within{
+        box-shadow: none !important;
+      }
+      .ant-picker-outlined {
+        border-width: 2px !important;
+      }
+      .ant-picker-dropdown {
+        scale: .92;
+        inset: 45px auto auto -2px !important
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/index.tsx"></script>
+  </body>
+</html>
