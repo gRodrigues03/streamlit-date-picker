@@ -20,7 +20,7 @@ const DatePickerComponent = (props: ComponentProps) => {
         <>
             {label && <p className="label" style={{ color: textColor }}>{label}</p>}
 
-            <Suspense fallback={<div style={{ height: 64 }}>Carregando...</div>}>
+            <Suspense fallback={<div style={{ height: 37 }}>Carregando...</div>}>
                 {id === "date_range_picker" && (
                     <LazyDateRangePicker {...props} bgColor={bgColor} textColor={textColor} borderColor={borderColor} />
                 )}
