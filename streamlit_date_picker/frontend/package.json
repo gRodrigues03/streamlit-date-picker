@@ -5,13 +5,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "antd": "^6.2.0",
+    "antd": "^6.2.1",
     "dayjs": "^1.11.19",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-text-mask": "^5.5.0",
-    "streamlit-component-lib": "^2.0.0"
-    "streamlit-component-lib": "file:../../../streamlit/component-lib",
+    "@streamlit/component-v2-lib": "^0.2.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -39,9 +38,6 @@
     ]
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^14.6.1",
     "@types/react-text-mask": "^5.4.14",
     "vite": "^7.3.1",
     "@vitejs/plugin-react": "^5.1.2",

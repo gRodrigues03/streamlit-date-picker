@@ -1,4 +1,3 @@
-import { Streamlit } from "streamlit-component-lib"
 import React, { ComponentProps, useMemo, useState, useCallback } from "react"
 import { DatePicker, ConfigProvider } from 'antd';
 import dayjs from 'dayjs'
@@ -39,38 +38,11 @@ function DateRangePicker(props: ComponentProps<any>) {
             : []
     ), [props.args["available_dates"]]);
 
-    const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
-
-    const checkOpen = useCallback(() => {
-        if (timeoutRef.current !== null) {
-            clearTimeout(timeoutRef.current);
-        }
-
-        timeoutRef.current = setTimeout(() => {
-            const picker = document.querySelector('.ant-picker');
-            const dropdown = document.querySelector('.ant-picker-dropdown');
-
-            if (
-                !picker?.classList.contains('ant-picker-focused') ||
-                dropdown?.classList.contains('ant-slide-up-leave')
-            ) {
-                Streamlit.setFrameHeight();
-            } else {
-                Streamlit.setFrameHeight(415);
-            }
-        }, 20);
-    }, []);
-
     const onChange = useCallback((date: any, dateString: any) => {
         setStart(date[0]);
         setEnd(date[1]);
-        Streamlit.setComponentValue(dateString);
-        checkOpen();
-    }, [checkOpen]);
-
-    const onOpenChange = useCallback(() => {
-        checkOpen();
-    }, [checkOpen]);
+        props.setStateValue('fuck', dateString);
+    }, []);
 
     const disabledDate = useCallback((current: dayjs.Dayjs) => {
         if (availableDates.length === 0) {
@@ -96,8 +68,8 @@ function DateRangePicker(props: ComponentProps<any>) {
                         showTime
                         format={formatString}
                         onChange={onChange}
+                        inputReadOnly={window.isMobile}
                         placement="bottomLeft"
-                        onOpenChange={onOpenChange}
                         value={[start, end]}
                         disabledDate={disabledDate}
                     />
@@ -106,9 +78,9 @@ function DateRangePicker(props: ComponentProps<any>) {
                         allowClear={false}
                         picker={pickerType}
                         format={formatString}
+                        inputReadOnly={window.isMobile}
                         onChange={onChange}
                         placement="bottomLeft"
-                        onOpenChange={onOpenChange}
                         value={[start, end]}
                         disabledDate={disabledDate}
                     />

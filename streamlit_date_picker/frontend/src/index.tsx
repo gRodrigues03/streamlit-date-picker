@@ -1,41 +1,68 @@
-import React, { useEffect, Suspense } from "react"
-import { createRoot } from 'react-dom/client';
-import {Streamlit, ComponentProps, withStreamlitConnection} from "streamlit-component-lib";
+import React, { StrictMode } from "react"
+import {
+    FrontendRendererArgs,
+} from "@streamlit/component-v2-lib";
+import DatePicker from "./DatePicker";
+import DateRangePicker from "./RangePicker";
+import { createRoot, Root } from "react-dom/client";
+
+// Handle the possibility of multiple instances of the component to keep track
+// of the React roots for each component instance.
+const reactRoots: WeakMap<FrontendRendererArgs["parentElement"], Root> =
+  new WeakMap();
+
+const MyComponentRoot = (args) => {
+    const { data, parentElement, setStateValue } = args;
+
+    // Get the react-root div from the parentElement that we defined in our
+    // `st.components.v2.component` call in Python.
+    const rootElement = parentElement.querySelector(".react-root");
+
+    if (!rootElement) {
+        throw new Error("Unexpected: React root element not found");
+    }
+
+    // Check to see if we already have a React root for this component instance.
+    let reactRoot = reactRoots.get(parentElement);
+    if (!reactRoot) {
+        // If we don't, create a new root for the React application using the React
+        // DOM API.
+        // @see https://react.dev/reference/react-dom/client/createRoot
+        reactRoot = createRoot(rootElement);
+        reactRoots.set(parentElement, reactRoot);
+    }
 
 
-const LazyDatePicker = React.lazy(() => import("./DatePicker"));
-const LazyDateRangePicker = React.lazy(() => import("./RangePicker"));
 
-const DatePickerComponent = (props: ComponentProps) => {
+    const props = data
     const id = props.args['id'];
     const label = props.args['label'];
-
-    useEffect(() => {
-        Streamlit.setFrameHeight();
-    }, []);
     const bgColor = props.args.theme === 'dark' ? '#242830' : '#F3F4F5'
     const textColor = props.args.theme === 'dark' ? '#FFF' : '#000'
     const borderColor = props.args.theme === 'dark' ? '#343840' : '#cdcece'
-    return (
-        <>
-            {label && <p className="label" style={{ color: textColor }}>{label}</p>}
+    reactRoot.render(
+      <StrictMode>
+          {label && <p className="ccv2-label" style={{ color: textColor }}>{label}</p>}
 
-            <Suspense fallback={<div style={{ height: 37 }}>Carregando...</div>}>
-                {id === "date_range_picker" && (
-                    <LazyDateRangePicker {...props} bgColor={bgColor} textColor={textColor} borderColor={borderColor} />
-                )}
-                {id === "date_picker" && (
-                    <LazyDatePicker {...props} bgColor={bgColor} textColor={textColor} borderColor={borderColor} />
-                )}
-            </Suspense>
-        </>
+          {id === "date_range_picker" && (
+            <DateRangePicker setStateValue={setStateValue} bgColor={bgColor} textColor={textColor} borderColor={borderColor} {...props}/>
+          )}
+          {id === "date_picker" && (
+            <DatePicker setStateValue={setStateValue} bgColor={bgColor} textColor={textColor} borderColor={borderColor} {...props}/>
+          )}
+      </StrictMode>,
     );
+
+    // Return a function to cleanup the React application in the Streamlit
+    // component lifecycle.
+    return () => {
+        const reactRoot = reactRoots.get(parentElement);
+
+        if (reactRoot) {
+            reactRoot.unmount();
+            reactRoots.delete(parentElement);
+        }
+    };
 };
 
-const StreamlitDatePickerComponent = withStreamlitConnection(DatePickerComponent)
-
-const root = createRoot(document.getElementById("root") as HTMLElement);
-
-root.render(
-      <StreamlitDatePickerComponent/>
-);
+export default MyComponentRoot;

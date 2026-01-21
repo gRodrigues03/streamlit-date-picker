@@ -1,5 +1,4 @@
-import { Streamlit } from "streamlit-component-lib"
-import React, { ComponentProps, useMemo, useState, useCallback, useRef } from "react"
+import React, { useMemo, useState, useCallback, useRef } from "react"
 import { DatePicker as DATE_PICKER, ConfigProvider } from 'antd';
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc';
@@ -20,10 +19,9 @@ dayjs.extend(timezone);
 
 dayjs.tz.setDefault('America/Sao_Paulo');
 
-function DatePicker(props: ComponentProps<any>) {
+function DatePicker(props: any) {
     const [value, setValue] = useState<dayjs.Dayjs>(dayjs(props.args["value"] * 1000));
     const inputRef = useRef<any>(null);
-    console.log(props.color)
 
     const pickerType = useMemo(() => (
         props.args["picker_type"]
@@ -39,53 +37,10 @@ function DatePicker(props: ComponentProps<any>) {
             : []
     ), [props.args["available_dates"]]);
 
-
-    const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
-
-    const checkOpen = useCallback(() => {
-        if (timeoutRef.current !== null) {
-            clearTimeout(timeoutRef.current);
-        }
-
-        const wasFocused = document.activeElement === inputRef.current;
-
-        timeoutRef.current = setTimeout(() => {
-            const picker = document.querySelector('.ant-picker');
-            const dropdown = document.querySelector('.ant-picker-dropdown');
-
-            if (
-                !picker?.classList.contains('ant-picker-focused') ||
-                dropdown?.classList.contains('ant-slide-up-leave')
-            ) {
-                Streamlit.setFrameHeight();
-                if (inputRef.current) {
-                    inputRef.current.blur();
-                }
-            } else {
-                Streamlit.setFrameHeight(415);
-            }
-
-            // Re-focus input if it had focus before resizing
-            if (wasFocused && inputRef.current) {
-                setTimeout(() => {
-                    inputRef.current?.focus();
-                    inputRef.current?.select(); // optional
-                }, 50); // Small delay to let frame resize settle
-            }
-        }, 20);
-    }, []);
-
     const onChange = useCallback((date: any, dateString: any) => {
         setValue(date);
-        Streamlit.setComponentValue(dateString);
-
-        checkOpen();
-    }, [checkOpen]);
-
-    const onOpenChange = useCallback(() => {
-        checkOpen();
-    }, [checkOpen]);
-
+        props.setStateValue("fuck", dateString);
+    }, []);
     const disabledDate = useCallback((current: dayjs.Dayjs) => {
         if (availableDates.length === 0) {
             return false;
@@ -140,7 +95,6 @@ function DatePicker(props: ComponentProps<any>) {
                     picker={pickerType}
                     onChange={onChange}
                     placement="bottomLeft"
-                    onOpenChange={onOpenChange}
                     value={value}
                     disabledDate={disabledDate}
                     components={{
@@ -149,12 +103,15 @@ function DatePicker(props: ComponentProps<any>) {
                 />
             ) : (
                 <DATE_PICKER
-                    allowClear={false}
+                    multiple={props.args.multi}
+                    width={280}
+                    height={37.5}
+                    allowClear={props.args.multi}
+                    inputReadOnly={window.isMobile}
                     format={formatString}
                     picker={pickerType}
                     onChange={onChange}
                     placement="bottomLeft"
-                    onOpenChange={onOpenChange}
                     value={value}
                     disabledDate={disabledDate}
                     components={{
