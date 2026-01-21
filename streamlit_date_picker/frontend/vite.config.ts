@@ -28,7 +28,7 @@ export default defineConfig(() => {
                 entry: "./src/index.tsx",
                 name: "MyComponent",
                 formats: ["es"],
-                fileName: "index-[hash]",
+                fileName: "index",
             },
             ...(!isDev && {
                 esbuild: {
