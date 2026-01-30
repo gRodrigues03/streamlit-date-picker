@@ -21,22 +21,22 @@ dayjs.tz.setDefault('America/Sao_Paulo');
 const { RangePicker } = DatePicker;
 
 function DateRangePicker(props: ComponentProps<any>) {
-    const [start, setStart] = useState<dayjs.Dayjs>(dayjs(props.args["start"] * 1000));
-    const [end, setEnd] = useState<dayjs.Dayjs>(dayjs(props.args["end"] * 1000));
+    const [start, setStart] = useState<dayjs.Dayjs>(dayjs(props["start"] * 1000));
+    const [end, setEnd] = useState<dayjs.Dayjs>(dayjs(props["end"] * 1000));
 
     const pickerType = useMemo(() => (
-        props.args["picker_type"]
-    ), [props.args["picker_type"]]);
+        props["picker_type"]
+    ), [props["picker_type"]]);
 
     const formatString = useMemo(() => (
-        getFormatString(props.args["picker_type"]) || FormatString.date
-    ), [props.args["picker_type"]]);
+        getFormatString(props["picker_type"]) || FormatString.date
+    ), [props["picker_type"]]);
 
     const availableDates = useMemo(() => (
-        props.args["available_dates"]
-            ? props.args["available_dates"].map((d: number) => dayjs(d * 1000))
+        props["available_dates"]
+            ? props["available_dates"].map((d: number) => dayjs(d * 1000))
             : []
-    ), [props.args["available_dates"]]);
+    ), [props["available_dates"]]);
 
     const onChange = useCallback((date: any, dateString: any) => {
         setStart(date[0]);
@@ -57,7 +57,6 @@ function DateRangePicker(props: ComponentProps<any>) {
                             theme={{
                                 token: {
                                     colorTextBase: props.textColor,
-                                    borderRadius: 8,
                                     colorBgBase: props.bgColor,
                                     colorBorder: props.borderColor
                                 }

@@ -35,11 +35,11 @@ const MyComponentRoot = (args) => {
 
 
     const props = data
-    const id = props.args['id'];
-    const label = props.args['label'];
-    const bgColor = props.args.theme === 'dark' ? '#242830' : '#F3F4F5'
-    const textColor = props.args.theme === 'dark' ? '#FFF' : '#000'
-    const borderColor = props.args.theme === 'dark' ? '#343840' : '#cdcece'
+    const id = props['id'];
+    const label = props['label'];
+    const bgColor = props.theme === 'dark' ? '#242830' : '#F3F4F5'
+    const textColor = props.theme === 'dark' ? '#FFF' : '#000'
+    const borderColor = props.theme === 'dark' ? '#343840' : '#cdcece'
     reactRoot.render(
       <StrictMode>
           {label && <p className="ccv2-label" style={{ color: textColor }}>{label}</p>}
