@@ -1,10 +1,11 @@
 # Streamlit DatePicker (WIP)
 
 This is a fork of **Streamlit Date Picker** by [Imdreamer](https://github.com/imdreamer2018). The original repo can be found [here](https://github.com/imdreamer2018/streamlit-date-picker)
-> ⚠️ **Note:** This fork is still a work in progress. For production use, please refer to the original custom component.
+> ⚠️ **Note:** This fork has been heavily modified and tailored to my own needs.
 
 ## Modifications included in this fork
 
+ - Ported to Custom Components v2
  - Native-like input labels (optional)
  - Support for Streamlit colors (native accent and background)
  - Improved handling of module height changes
