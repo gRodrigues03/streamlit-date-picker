@@ -82,7 +82,6 @@ function DatePicker(props: any) {
     );
   });
   return (
-    <div>
       <ConfigProvider locale={locale}
                       theme={{
                         token: {
@@ -124,7 +123,6 @@ function DatePicker(props: any) {
           />
         )}
       </ConfigProvider>
-    </div>
   );
 }
 

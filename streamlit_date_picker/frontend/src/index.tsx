@@ -16,11 +16,11 @@ const MyComponentRoot = (args) => {
 
     // Get the react-root div from the parentElement that we defined in our
     // `st.components.v2.component` call in Python.
-    const rootElement = parentElement.querySelector(".react-root");
-
-    if (!rootElement) {
-        throw new Error("Unexpected: React root element not found");
-    }
+    // const rootElement = parentElement.querySelector(".react-root");
+    //
+    // if (!rootElement) {
+    //     throw new Error("Unexpected: React root element not found");
+    // }
 
     // Check to see if we already have a React root for this component instance.
     let reactRoot = reactRoots.get(parentElement);
@@ -28,7 +28,7 @@ const MyComponentRoot = (args) => {
         // If we don't, create a new root for the React application using the React
         // DOM API.
         // @see https://react.dev/reference/react-dom/client/createRoot
-        reactRoot = createRoot(rootElement);
+        reactRoot = createRoot(parentElement);
         reactRoots.set(parentElement, reactRoot);
     }
 

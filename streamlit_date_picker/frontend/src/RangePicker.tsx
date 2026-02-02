@@ -52,7 +52,6 @@ function DateRangePicker(props: ComponentProps<any>) {
     }, [availableDates]);
 
     return (
-        <div>
             <ConfigProvider locale={locale}
                             theme={{
                                 token: {
@@ -85,7 +84,6 @@ function DateRangePicker(props: ComponentProps<any>) {
                     />
                 )}
             </ConfigProvider>
-        </div>
     );
 }
 
