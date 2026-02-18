@@ -45,7 +45,7 @@ function DatePicker(props: any) {
     (current: dayjs.Dayjs) => {
       if (!current || availableDates.length === 0) return false;
 
-      return !availableDates.some((ts) =>
+      return !availableDates.some((ts: string | number | dayjs.Dayjs | Date | null | undefined) =>
         dayjs(ts).isSame(current, 'month')
       );
     },

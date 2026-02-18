@@ -11,7 +11,7 @@ import { createRoot, Root } from "react-dom/client";
 const reactRoots: WeakMap<FrontendRendererArgs["parentElement"], Root> =
   new WeakMap();
 
-const MyComponentRoot = (args) => {
+const MyComponentRoot = (args: { data: any; parentElement: any; setStateValue: any; }) => {
     const { data, parentElement, setStateValue } = args;
 
     // Get the react-root div from the parentElement that we defined in our
@@ -37,9 +37,10 @@ const MyComponentRoot = (args) => {
     const props = data
     const id = props['id'];
     const label = props['label'];
-    const bgColor = props.theme === 'dark' ? '#242830' : '#F3F4F5'
-    const textColor = props.theme === 'dark' ? '#FFF' : '#000'
-    const borderColor = props.theme === 'dark' ? '#343840' : '#cdcece'
+    const theme = window.themePref === 'dark'
+    const bgColor = theme ? '#242830' : '#F3F4F5'
+    const textColor = theme ? '#FFF' : '#000'
+    const borderColor = theme ? '#343840' : '#cdcece'
     reactRoot.render(
       <StrictMode>
           {label && <p className="ccv2-label" style={{ color: textColor }}>{label}</p>}
