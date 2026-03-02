@@ -6,10 +6,10 @@
   "private": true,
   "dependencies": {
     "@streamlit/component-v2-lib": "^0.2.0",
-    "antd": "^6.3.0",
+    "antd": "^6.3.1",
     "dayjs": "^1.11.19",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
     "react-text-mask": "^5.5.0"
   },
   "scripts": {
@@ -38,13 +38,13 @@
     ]
   },
   "devDependencies": {
-    "@types/react-dom": "^18.3.7",
+    "@types/react-dom": "^19.2.3",
     "@types/react-text-mask": "^5.4.14",
     "@vitejs/plugin-react": "^5.1.4",
     "@vitejs/plugin-react-swc": "^4.2.3",
     "terser-webpack-plugin": "^5.3.16",
     "typescript": "^5.9.3",
     "vite": "^7.3.1",
-    "webpack": "^5.105.1"
+    "webpack": "^5.105.3"
   }
 }
