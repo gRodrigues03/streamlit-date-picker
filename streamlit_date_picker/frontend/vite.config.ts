@@ -1,43 +1,22 @@
-import react from "@vitejs/plugin-react";
-import process from "node:process";
-import { defineConfig, UserConfig } from "vite";
+import react from "@vitejs/plugin-react-swc";
+import { defineConfig } from "vite";
 
-/**
- * Vite configuration for Streamlit Custom Component v2 development using React.
- *
- * @see https://vitejs.dev/config/ for complete Vite configuration options.
- */
-export default defineConfig(() => {
-    const isProd = true;
-    const isDev = !isProd;
-
-    return {
-        base: "./",
-        plugins: [react()],
-        define: {
-            // We are building in library mode, we need to define the NODE_ENV
-            // variable to prevent issues when executing the JS.
-            "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV),
+export default defineConfig({
+    base: "./",
+    plugins: [react()],
+    define: {
+        "process.env.NODE_ENV": '"production"',
+    },
+    build: {
+        outDir: "dist",
+        target: "chrome109",
+        minify: "terser",
+        sourcemap: false,
+        lib: {
+            entry: "./src/index.tsx",
+            name: "MyComponent",
+            formats: ["es"],
+            fileName: "index",
         },
-        build: {
-            minify: 'terser',
-            cssMinify: true,
-            outDir: "dist",
-            sourcemap: isDev,
-            lib: {
-                entry: "./src/index.tsx",
-                name: "MyComponent",
-                formats: ["es"],
-                fileName: "index",
-            },
-            ...(!isDev && {
-                esbuild: {
-                    drop: ["console", "debugger"],
-                    minifyIdentifiers: true,
-                    minifySyntax: true,
-                    minifyWhitespace: true,
-                },
-            }),
-        },
-    } satisfies UserConfig;
+    },
 });

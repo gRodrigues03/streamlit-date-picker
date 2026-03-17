@@ -20,7 +20,10 @@ dayjs.extend(timezone);
 dayjs.tz.setDefault('America/Sao_Paulo');
 
 function DatePicker(props: any) {
-  const [value, setValue] = useState<dayjs.Dayjs>(dayjs(props["value"] * 1000));
+  const [value, setValue] = useState<dayjs.Dayjs | null>(() => {
+    const v = props["value"];
+    return v && !Array.isArray(v) ? dayjs(v * 1000) : null;
+  });
   const inputRef = useRef<any>(null);
 
   const pickerType = useMemo(() => (
