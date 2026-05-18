@@ -113,7 +113,7 @@ function DatePicker(props: any) {
             width={280}
             height={37.5}
             allowClear={props.multi}
-            inputReadOnly={window.isMobile}
+            inputReadOnly={window.clientInfo.isMobile}
             format={formatString}
             picker={pickerType}
             onChange={onChange}

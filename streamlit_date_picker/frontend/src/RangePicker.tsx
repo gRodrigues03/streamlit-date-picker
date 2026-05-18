@@ -66,7 +66,7 @@ function DateRangePicker(props: ComponentProps<any>) {
                         showTime
                         format={formatString}
                         onChange={onChange}
-                        inputReadOnly={window.isMobile}
+                        inputReadOnly={window.clientInfo.isMobile}
                         placement="bottomLeft"
                         value={[start, end]}
                         disabledDate={disabledDate}
@@ -76,7 +76,7 @@ function DateRangePicker(props: ComponentProps<any>) {
                         allowClear={false}
                         picker={pickerType}
                         format={formatString}
-                        inputReadOnly={window.isMobile}
+                        inputReadOnly={window.clientInfo.isMobile}
                         onChange={onChange}
                         placement="bottomLeft"
                         value={[start, end]}
