@@ -37,7 +37,7 @@ const MyComponentRoot = (args: { data: any; parentElement: any; setStateValue: a
     const props = data
     const id = props['id'];
     const label = props['label'];
-    const theme = window.themePref === 'dark'
+    const theme = window.clientInfo.themePref === 'dark'
     const bgColor = theme ? '#242830' : '#F3F4F5'
     const textColor = theme ? '#FFF' : '#000'
     const borderColor = theme ? '#343840' : '#cdcece'

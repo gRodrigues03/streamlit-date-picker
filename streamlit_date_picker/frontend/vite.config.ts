@@ -2,7 +2,6 @@ import react from "@vitejs/plugin-react-swc";
 import { defineConfig } from "vite";
 
 export default defineConfig({
-    base: "./",
     plugins: [react()],
     define: {
         "process.env.NODE_ENV": '"production"',
@@ -10,11 +9,10 @@ export default defineConfig({
     build: {
         outDir: "dist",
         target: "chrome109",
-        minify: "terser",
         sourcemap: false,
+        minify: "terser",
         lib: {
             entry: "./src/index.tsx",
-            name: "MyComponent",
             formats: ["es"],
             fileName: "index",
         },
