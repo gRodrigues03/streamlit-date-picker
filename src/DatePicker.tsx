@@ -1,9 +1,11 @@
-import React, {useMemo, useState, useCallback, useRef} from "react"
-import {DatePicker as DATE_PICKER, ConfigProvider} from 'antd';
+import React, {useCallback, useMemo, useRef, useState} from "react"
+import {ConfigProvider, DatePicker as DATE_PICKER} from 'antd';
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import MaskedInput from "react-text-mask";
+
+import "@gpc/gpc-window-types";
 
 import 'dayjs/plugin/utc';
 import 'dayjs/plugin/timezone';
@@ -85,47 +87,47 @@ function DatePicker(props: any) {
     );
   });
   return (
-      <ConfigProvider locale={locale}
-                      theme={{
-                        token: {
-                          colorTextBase: props.textColor,
-                          colorBgBase: props.bgColor,
-                          colorBorder: props.borderColor
-                        }
-                      }}>
-        {pickerType === "time" ? (
-          <DATE_PICKER
-            allowClear={false}
-            showTime
-            format={formatString}
-            picker={pickerType}
-            onChange={onChange}
-            placement="bottomLeft"
-            value={value}
-            disabledDate={disabledDate}
-            components={{
-              input: InputComponent,
-            }}
-          />
-        ) : (
-          <DATE_PICKER
-            multiple={props.multi}
-            width={280}
-            height={37.5}
-            allowClear={props.multi}
-            inputReadOnly={window.clientInfo.isMobile}
-            format={formatString}
-            picker={pickerType}
-            onChange={onChange}
-            placement="bottomLeft"
-            value={value}
-            disabledDate={disabledDate}
-            components={{
-              input: InputComponent,
-            }}
-          />
-        )}
-      </ConfigProvider>
+    <ConfigProvider locale={locale}
+                    theme={{
+                      token: {
+                        colorTextBase: props.textColor,
+                        colorBgBase: props.bgColor,
+                        colorBorder: props.borderColor
+                      }
+                    }}>
+      {pickerType === "time" ? (
+        <DATE_PICKER
+          allowClear={false}
+          showTime
+          format={formatString}
+          picker={pickerType}
+          onChange={onChange}
+          placement="bottomLeft"
+          value={value}
+          disabledDate={disabledDate}
+          components={{
+            input: InputComponent,
+          }}
+        />
+      ) : (
+        <DATE_PICKER
+          multiple={props.multi}
+          width={280}
+          height={37.5}
+          allowClear={props.multi}
+          inputReadOnly={window.clientInfo.isMobile}
+          format={formatString}
+          picker={pickerType}
+          onChange={onChange}
+          placement="bottomLeft"
+          value={value}
+          disabledDate={disabledDate}
+          components={{
+            input: InputComponent,
+          }}
+        />
+      )}
+    </ConfigProvider>
   );
 }
 

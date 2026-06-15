@@ -1,11 +1,12 @@
 export enum FormatString {
-    time = 'DD/MM/YYYY HH:mm:ss',
-    date = 'DD/MM/YYYY',
-    week = 'wo/YYYY',
-    month = 'MM/YYYY',
-    quarter = 'Q/YYYY',
-    year = 'YYYY'
+  time = 'DD/MM/YYYY HH:mm:ss',
+  date = 'DD/MM/YYYY',
+  week = 'wo/YYYY',
+  month = 'MM/YYYY',
+  quarter = 'Q/YYYY',
+  year = 'YYYY'
 }
+
 export const getFormatString = (value: string): FormatString | undefined => {
   switch (value) {
     case 'time':
