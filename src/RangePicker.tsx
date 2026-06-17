@@ -7,7 +7,7 @@ import timezone from 'dayjs/plugin/timezone';
 import 'dayjs/plugin/utc';
 import 'dayjs/plugin/timezone';
 import 'dayjs/plugin/localeData';
-import {FormatString, getFormatString} from "./utils";
+import {FormatString, getFormatString, parseDate} from "./utils";
 
 import "@gpc/gpc-window-types";
 
@@ -23,8 +23,13 @@ dayjs.tz.setDefault('America/Sao_Paulo');
 const {RangePicker} = DatePicker;
 
 function DateRangePicker(props: any) {
-  const [start, setStart] = useState<dayjs.Dayjs>(dayjs(props["start"] * 1000));
-  const [end, setEnd] = useState<dayjs.Dayjs>(dayjs(props["end"] * 1000));
+  const [start, setStart] = useState<dayjs.Dayjs>(
+    () => parseDate(props["start"]) ?? dayjs()
+  );
+
+  const [end, setEnd] = useState<dayjs.Dayjs>(
+    () => parseDate(props["end"]) ?? dayjs()
+  );
 
   const pickerType = useMemo(() => (
     props["picker_type"]
@@ -36,7 +41,9 @@ function DateRangePicker(props: any) {
 
   const availableDates = useMemo(() => (
     props["available_dates"]
-      ? props["available_dates"].map((d: number) => dayjs(d * 1000))
+      ? props["available_dates"]
+        .map(parseDate)
+        .filter((d: any): d is dayjs.Dayjs => d !== null)
       : []
   ), [props["available_dates"]]);
 

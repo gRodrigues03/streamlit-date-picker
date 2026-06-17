@@ -10,7 +10,7 @@ import "@gpc/gpc-window-types";
 import 'dayjs/plugin/utc';
 import 'dayjs/plugin/timezone';
 import 'dayjs/plugin/localeData';
-import {FormatString, getFormatString, getMaskByFormat} from "./utils";
+import {FormatString, getFormatString, getMaskByFormat, parseDate} from "./utils";
 
 import locale from 'antd/locale/pt_BR';
 import 'dayjs/locale/pt-br';
@@ -22,10 +22,31 @@ dayjs.extend(timezone);
 dayjs.tz.setDefault('America/Sao_Paulo');
 
 function DatePicker(props: any) {
-  const [value, setValue] = useState<dayjs.Dayjs | null>(() => {
-    const v = props["value"];
-    return v && !Array.isArray(v) ? dayjs(v * 1000) : null;
+  const [value, setValue] = useState<
+    dayjs.Dayjs | dayjs.Dayjs[] | null
+  >(() => {
+    if (Array.isArray(props.value)) {
+      return props.value
+        .map(parseDate)
+        .filter((d: any): d is dayjs.Dayjs => d !== null);
+    }
+
+    return parseDate(props.value);
   });
+
+  const singleValue =
+    !Array.isArray(value)
+      ? value
+      : null;
+  const multiValue =
+    Array.isArray(value)
+      ? value
+      : [];
+
+  console.log('props.value:', props.value)
+  console.log('Single:', singleValue)
+  console.log('Multi:', multiValue)
+
   const inputRef = useRef<any>(null);
 
   const pickerType = useMemo(() => (
@@ -38,7 +59,9 @@ function DatePicker(props: any) {
 
   const availableDates = useMemo(() => (
     props["available_dates"]
-      ? props["available_dates"].map((d: number) => dayjs(d * 1000))
+      ? props["available_dates"]
+        .map(parseDate)
+        .filter((d: any): d is dayjs.Dayjs => d !== null)
       : []
   ), [props["available_dates"]]);
 
@@ -103,7 +126,7 @@ function DatePicker(props: any) {
           picker={pickerType}
           onChange={onChange}
           placement="bottomLeft"
-          value={value}
+          value={singleValue}
           disabledDate={disabledDate}
           components={{
             input: InputComponent,
@@ -120,7 +143,7 @@ function DatePicker(props: any) {
           picker={pickerType}
           onChange={onChange}
           placement="bottomLeft"
-          value={value}
+          value={props.multi ? multiValue : singleValue}
           disabledDate={disabledDate}
           components={{
             input: InputComponent,

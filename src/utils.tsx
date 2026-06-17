@@ -1,3 +1,5 @@
+import dayjs, { Dayjs } from 'dayjs';
+
 export enum FormatString {
   time = 'DD/MM/YYYY HH:mm:ss',
   date = 'DD/MM/YYYY',
@@ -51,6 +53,40 @@ export function getMaskByFormat(format: string): Array<string | RegExp> {
   }
 
   return []; // fallback
+}
+
+export type DateInput =
+  | string
+  | number
+  | Date
+  | Dayjs
+  | null
+  | undefined;
+
+export function parseDate(value: DateInput): Dayjs {
+  if (dayjs.isDayjs(value)) {
+    return value;
+  }
+
+  if (value instanceof Date) {
+    return dayjs(value);
+  }
+
+  if (typeof value === 'number') {
+    return dayjs.unix(value);
+  }
+
+  if (typeof value === 'string') {
+    const num = Number(value);
+
+    if (!Number.isNaN(num) && /^\d+(\.\d+)?$/.test(value)) {
+      return dayjs.unix(num);
+    }
+
+    return dayjs(value);
+  }
+
+  return dayjs();
 }
 
 // export function useCssVar(varName: string) {
