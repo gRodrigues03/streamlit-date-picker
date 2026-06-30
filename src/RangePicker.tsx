@@ -1,20 +1,15 @@
 import React, {useCallback, useMemo, useState} from "react"
 import {ConfigProvider, DatePicker} from 'antd';
 import dayjs from 'dayjs'
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
 
-import 'dayjs/plugin/utc';
-import 'dayjs/plugin/timezone';
-import 'dayjs/plugin/localeData';
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 import {FormatString, getFormatString, parseDate} from "./utils";
 
 import "@gpc/gpc-window-types";
 
-import locale from 'antd/locale/pt_BR';
-import 'dayjs/locale/pt-br';
+import locale from 'antd/es/locale/pt_BR';
 
-dayjs.locale('pt-br');
 dayjs.extend(utc);
 dayjs.extend(timezone);
 

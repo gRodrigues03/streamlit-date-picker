@@ -1,5 +1,5 @@
 import react from "@vitejs/plugin-react-swc";
-import { defineConfig } from "vite";
+import {defineConfig} from "vite";
 
 export default defineConfig({
     plugins: [react()],
@@ -14,7 +14,7 @@ export default defineConfig({
         lib: {
             entry: "./src/index.tsx",
             formats: ["es"],
-            fileName: "index",
+            fileName: "index16",
         },
         rollupOptions: {
             external: ['react/jsx-runtime']

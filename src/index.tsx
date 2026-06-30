@@ -1,60 +1,56 @@
-import {StrictMode} from "react"
-import DatePicker from "./DatePicker";
-import DateRangePicker from "./RangePicker";
+import React, {StrictMode} from "react"; // 1. Mantido o 'React' para salvar o escopo do runtime
 import {createRoot} from "react-dom/client";
 import "@gpc/gpc-window-types";
 
-// Handle the possibility of multiple instances of the component to keep track
-// of the React roots for each component instance.
 const reactRoots = new WeakMap();
+const modules = {
+  date_picker: () => import("./DatePicker"),
+  date_range_picker: () => import("./RangePicker"),
+} as const;
 
 const MyComponentRoot = (args: { data: any; parentElement: any; setStateValue: any; }) => {
   const {data, parentElement, setStateValue} = args;
 
-  // Get the react-root div from the parentElement that we defined in our
-  // `st.components.v2.component` call in Python.
-  // const rootElement = parentElement.querySelector(".react-root");
-  //
-  // if (!rootElement) {
-  //     throw new Error("Unexpected: React root element not found");
-  // }
-
-  // Check to see if we already have a React root for this component instance.
   let reactRoot = reactRoots.get(parentElement);
   if (!reactRoot) {
-    // If we don't, create a new root for the React application using the React
-    // DOM API.
-    // @see https://react.dev/reference/react-dom/client/createRoot
     reactRoot = createRoot(parentElement);
     reactRoots.set(parentElement, reactRoot);
   }
 
-
-  const props = data
-  const id = props['id'];
+  const props = data;
+  // 2. Mapeamento explícito de tipo. Isso diz ao linter: "id vai ser usado para indexar modules"
+  const id: 'date_picker' | 'date_range_picker' = props['id'];
   const label = props['label'];
-  const theme = window.clientInfo.themePref === 'dark'
-  const bgColor = theme ? '#242830' : '#F3F4F5'
-  const textColor = theme ? '#FFF' : '#000'
-  const borderColor = theme ? '#343840' : '#cdcece'
-  reactRoot.render(
-    <StrictMode>
-      {label && <p className="ccv2-label" style={{color: textColor}}>{label}</p>}
+  const theme = window.clientInfo.themePref === 'dark';
+  const bgColor = theme ? '#242830' : '#F3F4F5';
+  const textColor = theme ? '#FFF' : '#000';
+  const borderColor = theme ? '#343840' : '#cdcece';
 
-      {id === "date_range_picker" && (
-        <DateRangePicker setStateValue={setStateValue} bgColor={bgColor} textColor={textColor} borderColor={borderColor} {...props}/>
-      )}
-      {id === "date_picker" && (
-        <DatePicker setStateValue={setStateValue} bgColor={bgColor} textColor={textColor} borderColor={borderColor} {...props}/>
-      )}
-    </StrictMode>,
-  );
 
-  // Return a function to cleanup the React application in the Streamlit
-  // component lifecycle.
+  (async () => {
+    const {default: Component} = await modules[id]();
+
+    reactRoot.render(
+      <StrictMode>
+        {label && (
+          <p className="ccv2-label" style={{color: textColor}}>
+            {label}
+          </p>
+        )}
+
+        <Component
+          setStateValue={setStateValue}
+          bgColor={bgColor}
+          textColor={textColor}
+          borderColor={borderColor}
+          {...props}
+        />
+      </StrictMode>
+    );
+  })();
+
   return () => {
     const reactRoot = reactRoots.get(parentElement);
-
     if (reactRoot) {
       reactRoot.unmount();
       reactRoots.delete(parentElement);
